@@ -42,7 +42,7 @@ def plot_series(series, index, output_path):
     plt.xlabel('Time')
     plt.ylabel('Value')
     plt.xticks(rotation=45)
-    plt.savefig(f"{output_path}time-series{index}.png", bbox_inches="tight")
+    plt.savefig(f"{output_path}/ts/time-series{index}.png", bbox_inches="tight")
     plt.close()
 
 def save_image(image, index, output_path, cmap):
@@ -50,7 +50,7 @@ def save_image(image, index, output_path, cmap):
     plt.figure(figsize=(10, 10))
     plt.imshow(image, cmap=cmap, origin="lower")
     plt.axis("off")
-    plt.savefig(f"{output_path}time-series{index}.png", bbox_inches="tight")
+    plt.savefig(f"{output_path}/time-series{index}.png", bbox_inches="tight")
     plt.close()
 
 def process_time_series(df, output_path, h=18):
@@ -67,7 +67,7 @@ def process_time_series(df, output_path, h=18):
         X_gadf = generate_gaf_image(X, 'difference')
 
         # Save images
-        save_image(X_rp, i, output_path, 'binary')
-        save_image(X_mtf, i, output_path, "rainbow")
-        save_image(X_gasf, i, output_path, "rainbow")
-        save_image(X_gadf, i, output_path, "rainbow")
+        save_image(X_rp, i, output_path+'/rp', 'binary')
+        save_image(X_mtf, i, output_path+'/mtf', "rainbow")
+        save_image(X_gasf, i, output_path+'/gasf', "rainbow")
+        save_image(X_gadf, i, output_path+'gadf', "rainbow")
