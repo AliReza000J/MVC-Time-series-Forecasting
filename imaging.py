@@ -71,9 +71,3 @@ def process_time_series(df, output_path, h=18):
         save_image(X_mtf, i, output_path, "rainbow")
         save_image(X_gasf, i, output_path, "rainbow")
         save_image(X_gadf, i, output_path, "rainbow")
-
-        # Visualize Time series
-        plt.plot(df["Values"], linestyle = 'solid')
-        plt.xlabel('Time')
-        plt.ylabel('Value')
-        plt.xticks(rotation=45)
