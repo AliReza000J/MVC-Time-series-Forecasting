@@ -79,7 +79,3 @@ def process_time_series(df, output_path, h=18, verbose=True):
 
     if verbose:
         print("All time series processed successfully.")
-
-# Main
-# df = pd.read_csv("your_timeseries_data.csv")
-# process_time_series(df, output_path="output_images", h=18)        
