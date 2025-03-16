@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-from view_generation import process_time_series
+from view_generation import process_time_series # Generate views
 from m3_preprocessing import process_m3_dataset  # M3 dataset preprocessing
 from feature_extraction import extract_time_series_features, extract_image_features  # Feature extraction
+from view_selection import select_views # Select views
 
 
 # # ================================
