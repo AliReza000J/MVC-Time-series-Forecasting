@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from m3_preprocessing import process_m3_dataset  # M3 dataset preprocessing
-from AE_FeatureExtraction import extract_time_series_features, extract_image_features  # Feature extraction
-from imaging import process_time_series  # Time series to images
+from feature_extraction import extract_time_series_features, extract_image_features  # Feature extraction
+from view_generation import process_time_series  # Time series to images
 
 # # ================================
 # #  Main Execution Script
