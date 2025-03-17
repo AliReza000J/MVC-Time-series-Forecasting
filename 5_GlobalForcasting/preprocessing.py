@@ -41,29 +41,6 @@ def normalize_feature_vectors(features):
     features = (features - minimum) / (maximum - minimum + 1e-8)  # Avoid division by zero
     return features
 
-# RMSE Calculation
-def root_mean_squared_error(actual, forecast, method='single_value'):
-    """Computes RMSE for time-series predictions."""
-    if method == 'single_value':
-        return np.sqrt(np.mean((actual.flatten() - forecast.flatten())**2))
-    
-    return [np.sqrt(np.mean((actual[i] - forecast[i])**2)) for i in range(len(actual))]
-
-# SMAPE Calculation
-def single_point_smape(actual, forecast, suilin_smape=False):
-    """Calculates SMAPE for a single prediction point."""
-    epsilon = 0.1 if suilin_smape else 0
-    denominator = np.abs(actual) + np.abs(forecast) + epsilon
-    return np.sum(2 * np.abs(forecast - actual) / np.maximum(denominator, 0.5 + epsilon))
-
-def smape(actual, forecast, method='single_value', suilin_smape=False):
-    """Computes SMAPE for time-series predictions."""
-    if method == 'single_value':
-        return 100 * np.mean([single_point_smape(actual[i], forecast[i], suilin_smape) for i in range(len(actual))])
-    
-    return np.array([100 * np.mean([single_point_smape(actual[i, j], forecast[i, j], suilin_smape)
-                                    for j in range(len(actual[i]))]) for i in range(len(actual))])
-
 # Dataset Creation for Time-Series Forecasting
 def create_dataset(sample, look_back, look_forward, sample_overlap, dataset_seasonal):
     """Creates sliding window samples for training."""
