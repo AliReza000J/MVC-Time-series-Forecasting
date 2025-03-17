@@ -169,4 +169,4 @@ def run_experiments(n_runs=2, ae_name="", dim=0):
 
     print("Shape of combined predictions:", combined_predictions.shape)
     
-    return combined_predictions
+    return combined_predictions, TestY, TrainY

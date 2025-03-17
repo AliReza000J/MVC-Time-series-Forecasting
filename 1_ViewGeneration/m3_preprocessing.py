@@ -10,10 +10,10 @@ def load_dataset(file_path):
     """
     if os.path.exists(file_path):
         m3 = pd.read_csv(file_path)
-        print("✅ Dataset loaded successfully!")
+        print("Dataset loaded successfully!")
         return m3
     else:
-        print(f"❌ Error: File '{file_path}' not found. Please check the path.")
+        print(f"Error: File '{file_path}' not found. Please check the path.")
         return None
 
 def preprocessing(data, horizon=18):
@@ -71,5 +71,5 @@ def process_m3_dataset(file_path):
     for label, padded in padded_sequences.items():
         reshaped_arrays[label] = padded.reshape(padded.shape[0], 1, padded.shape[1])
 
-    print("✅ Data preprocessing completed successfully!")
+    print("Data preprocessing completed successfully!")
     return reshaped_arrays

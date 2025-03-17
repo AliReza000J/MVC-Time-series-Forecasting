@@ -22,19 +22,19 @@ def process_csv_results(directory_path='/kaggle/working/', dataset_name='m3-fina
     file_list = sorted([f for f in os.listdir(directory_path) if f.endswith('.csv')])
 
     if not file_list:
-        print("⚠️ No CSV files found in the directory.")
+        print("No CSV files found in the directory.")
         return
 
     # Select the last CSV file
     csv_file = file_list[-1]
     file_path = os.path.join(directory_path, csv_file)
-    print(f"📂 Processing file: {csv_file}")
+    print(f"Processing file: {csv_file}")
 
     # Read CSV
     try:
         df = pd.read_csv(file_path, header=None)
     except Exception as e:
-        print(f"❌ Error reading CSV file: {e}")
+        print(f"Error reading CSV file: {e}")
         return
 
     # Retrieve dataset parameters
@@ -90,4 +90,4 @@ def process_csv_results(directory_path='/kaggle/working/', dataset_name='m3-fina
     output_file = os.path.join(directory_path, f"Average_Results_{csv_file}")
     result_df.to_csv(output_file, index=False)
 
-    print(f"✅ Processed results saved to: {output_file}")
+    print(f"Processed results saved to: {output_file}")

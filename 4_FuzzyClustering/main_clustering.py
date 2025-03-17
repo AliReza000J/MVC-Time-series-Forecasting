@@ -1,4 +1,4 @@
-def main(viewpoint, data, center_points, k, t_max, NR, alpha1, landa, q, gama, Neig, number_viwe, row, sample_weight):
+def main_clustering(viewpoint, data, center_points, k, t_max, NR, alpha1, landa, q, gama, Neig, number_viwe, row, sample_weight):
     import numpy as np
     import math
     import sys

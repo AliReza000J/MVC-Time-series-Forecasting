@@ -64,9 +64,6 @@ def median_ensemble_evaluation(combined_predictions, TestY, TrainY, dataset_name
 
     return final_result
 
-import os
-import numpy as np
-import pandas as pd
 
 def mean_ensemble_evaluation(combined_predictions, TestY, TrainY, dataset_name, mase_freq, save_path="/kaggle/working/ensemble_mean"):
     """
