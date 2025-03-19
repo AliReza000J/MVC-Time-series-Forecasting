@@ -51,7 +51,7 @@ def process_m3_dataset(file_path):
     padded_sequences = {}  # Store padded sequences
     reshaped_arrays = {}  # Store final reshaped arrays
 
-    # Group time series data by 'Category' (e.g., MICRO, MACRO, INDUSTRIAL, etc.)
+    # Group time series data by 'Category' (e.g., MICRO, MACRO, INDUSTRY, etc.)
     for class_label in m3['Category'].unique():
         clean_label = class_label.replace(" ", "")  # Remove spaces for consistency
         class_dataframes[clean_label] = m3[m3['Category'] == class_label]

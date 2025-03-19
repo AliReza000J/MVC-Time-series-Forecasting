@@ -25,7 +25,7 @@ if __name__ == "__main__":
     """
 
     # Step 1: Process M3 dataset
-    file_path = "m3monthdataset/M3Month.csv"
+    file_path = "/workspaces/MVC-Time-series-Forcasting/data/M3Month.csv"
     processed_data = process_m3_dataset(file_path)
 
     if processed_data:
@@ -38,7 +38,7 @@ if __name__ == "__main__":
             df = pd.DataFrame(ts_data)  # Convert to DataFrame for processing
             process_time_series(df, output_path=f"{image_output_path}/{label}")
 
-        # Step 3: Extract numerical features from time series
+        # Step 3: Extract numerical features from time series =!=!=!=
         ts_features = {label: extract_time_series_features(data) for label, data in processed_data.items()}
         np.save("time_series_features.npy", ts_features)
         print("Time-series feature extraction complete. Features saved.")
