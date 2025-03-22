@@ -1,16 +1,8 @@
 import numpy as np
 import pandas as pd
+from ViewGeneration.view_generation import process_m3_dataset  # M3 dataset preprocessing
 from ViewGeneration.view_generation import process_time_series  # Generate views
-from ViewGeneration.m3_preprocessing import process_m3_dataset  # M3 dataset preprocessing
-# from feature_extraction import extract_time_series_features, extract_image_features  # Feature extraction
-# from view_selection import select_views  # Select views
-# from demo import fuzzy_multi_view_clustering  # Multi-view fuzzy clustering
-# from m3_forcasting import run_experiments  # Run multiple experiments
-# from ensemble import median_ensemble_evaluation  # Median ensemble
 
-# ================================
-#  Main Execution Script
-# ================================
 if __name__ == "__main__":
     """
     Unified pipeline:
@@ -26,18 +18,39 @@ if __name__ == "__main__":
 
     # Step 1: Process M3 dataset
     file_path = "/workspaces/MVC-Time-series-Forcasting/data/M3Month.csv"
-    processed_data = process_m3_dataset(file_path)
+    data = process_m3_dataset(file_path)
 
-    if processed_data:
-        print("Time-series processing complete. Categories:", list(processed_data.keys()))
+    # Step 2: Generate images from time series
 
-        # Step 2: Generate images from time series
-        image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images/"
-        for label, ts_data in processed_data.items():
-            print(f"Generating images for category: {label}")
-            # df = pd.DataFrame(ts_data)  # Convert to DataFrame for processing
-            df = pd.DataFrame(ts_data.squeeze(axis=1))  # Convert to DataFrame for processing
-            process_time_series(df, output_path=f"{image_output_path}/{label}")
+    #  micro
+    micro = data['MICRO']
+    print(micro)
+    process_time_series(micro, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/MICRO")
+
+    #  industry
+    industry = data['INDUSTRY']
+    print(industry)
+    process_time_series(industry, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/INDUSTRY/", 18, True, 474)
+
+    #  macro
+    macro = data['MACRO']
+    print(macro)
+    process_time_series(macro, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/MACRO", 18, True, 808)
+
+    #  finance
+    finance = data['FINANCE']
+    print(finance)
+    process_time_series(finance, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/FINANCE", 18, True, 1120)
+
+     #  demo
+    demo = data['DEMOGRAPHIC']
+    print(demo)
+    process_time_series(demo, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/DEMOGRAPHIC", 18, True, 1265)
+
+     #  other
+    other = data['OTHER']
+    print(other)
+    process_time_series(other, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/OTHER", 18, True, 1376)
 
     #     # Step 3: Extract numerical features from time series =!=!=!=
     #     ts_features = {label: extract_time_series_features(data) for label, data in processed_data.items()}
@@ -86,6 +99,3 @@ if __name__ == "__main__":
 
     #     print("Ensemble evaluation completed. Results saved.")
     #     print("Final Ensemble Results:", ensemble_results)
-
-    # else:
-    #     print("Error in processing M3 dataset. Please check file path and dataset format.")

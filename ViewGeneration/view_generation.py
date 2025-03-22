@@ -3,11 +3,57 @@ import pandas as pd
 import numpy as np
 from pyts.image import RecurrencePlot, GramianAngularField, MarkovTransitionField
 import matplotlib.pyplot as plt
+import pandas as pd
+
+import pandas as pd
+import numpy as np
+
+import pandas as pd
+
+import pandas as pd
+from collections import OrderedDict
+
+def process_m3_dataset(file_path, selected_category=None):
+    """
+    Processes the M3 dataset and extracts time-series data dynamically, preserving the original order of categories.
+
+    Parameters:
+    - file_path (str): Path to the M3 dataset CSV file.
+    - selected_category (str, optional): The category of data to extract. If None, all categories are processed.
+
+    Returns:
+    - OrderedDict: An ordered dictionary containing processed DataFrames for each category.
+    """
+    # Load dataset
+    data = pd.read_csv(file_path)
+
+    # Preserve the original order of categories
+    ordered_categories = list(data['Category'].unique())  
+    splited_dataframes = OrderedDict((cat.strip(), data[data['Category'] == cat].copy()) for cat in ordered_categories)
+
+    # If a specific category is requested, extract it
+    if selected_category:
+        selected_category = selected_category.strip()
+        if selected_category in splited_dataframes:
+            df = splited_dataframes[selected_category]
+            df = df.drop(["Series", "N", "NF", "Category", "Starting Year", "Starting Month"], axis=1)
+            return OrderedDict({selected_category: df})
+        else:
+            raise ValueError(f"Category '{selected_category}' not found in dataset.")
+    
+    # Process all categories while keeping the original order
+    for key in splited_dataframes:
+        splited_dataframes[key] = splited_dataframes[key].drop(
+            ["Series", "N", "NF", "Category", "Starting Year", "Starting Month"], axis=1
+        )
+
+    return splited_dataframes
 
 def preprocess_series(series, h):
     """Preprocess a single time series: drop NaN values and normalize."""
     series = series.dropna()[:-h]  # Remove last h values and NaNs
-    series = pd.DataFrame(series, columns=["Values"])
+    series = pd.DataFrame(series)
+    series = series.rename(columns={ series.columns[0]: "Values" })
     return series
 
 def normalize_series(series):
@@ -53,7 +99,7 @@ def save_image(image, index, output_path, cmap):
     plt.savefig(f"{output_path}/time-series{index}.png", bbox_inches="tight")
     plt.close()
 
-def process_time_series(df, output_path, h=18, verbose=True):
+def process_time_series(df, output_path, h=18, verbose=True, start_index=0):
     """Process all time series in the DataFrame."""
     os.makedirs(output_path, exist_ok=True)
 
