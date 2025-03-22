@@ -105,7 +105,7 @@ def process_time_series(df, output_path, h=18, verbose=True, start_index=0):
 
     for i in range(len(df)):
         if verbose:
-            print(f"Processing time series {i+1}/{len(df)}...")
+            print(f"Processing time series {start_index+i+1}/{len(df)+start_index}...")
         
         series = preprocess_series(df.iloc[i], h)
         plot_series(series, i, output_path)
@@ -118,10 +118,10 @@ def process_time_series(df, output_path, h=18, verbose=True, start_index=0):
         X_gadf = generate_gaf_image(X, "difference")
 
         # Save images
-        save_image(X_rp, i, f"{output_path}/rp", "binary")
-        save_image(X_mtf, i, f"{output_path}/mtf", "rainbow")
-        save_image(X_gasf, i, f"{output_path}/gasf", "rainbow")
-        save_image(X_gadf, i, f"{output_path}/gadf", "rainbow")
+        save_image(X_rp, start_index+i, f"{output_path}/rp", "binary")
+        save_image(X_mtf, start_index+i, f"{output_path}/mtf", "rainbow")
+        save_image(X_gasf, start_index+i, f"{output_path}/gasf", "rainbow")
+        save_image(X_gadf, start_index+i, f"{output_path}/gadf", "rainbow")
 
     if verbose:
         print("All time series processed successfully.")
