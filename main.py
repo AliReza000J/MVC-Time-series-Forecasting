@@ -30,7 +30,7 @@ if __name__ == "__main__":
     #  industry
     industry = data['INDUSTRY']
     print(industry)
-    process_time_series(industry, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/INDUSTRY/", 18, True, 474)
+    process_time_series(industry, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/INDUSTRY", 18, True, 474)
 
     #  macro
     macro = data['MACRO']
