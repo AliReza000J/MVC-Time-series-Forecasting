@@ -1,13 +1,8 @@
 import os
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
-from sklearn.metrics import mean_absolute_error
-from keras.models import Sequential
-from keras.layers import LSTM, Dense, RepeatVector, TimeDistributed, Masking
-from tslearn.preprocessing import TimeSeriesScalerMeanVariance
+from keras import LSTM, Dense, RepeatVector, TimeDistributed, Masking
 from PIL import Image
 import ImageAE 
 
