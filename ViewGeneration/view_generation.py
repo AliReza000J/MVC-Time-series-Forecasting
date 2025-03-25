@@ -108,7 +108,7 @@ def process_time_series(df, output_path, h=18, verbose=True, start_index=0):
             print(f"Processing time series {start_index+i+1}/{len(df)+start_index}...")
         
         series = preprocess_series(df.iloc[i], h)
-        plot_series(series, i, output_path)
+        plot_series(series, start_index+i, output_path)
         X = normalize_series(series)
         
         # Generate image representations

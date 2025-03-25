@@ -32,7 +32,7 @@ def preprocessing(data, horizon=18):
         ts_train.append(temp.reshape(-1, 1))  # Reshape to (timesteps, 1)
     return ts_train
 
-def process_m3_dataset(file_path):
+def process_m3_dataset_enc(file_path):
     """
     Full processing pipeline for the M3 Monthly dataset:
     - Loads dataset
