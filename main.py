@@ -12,12 +12,12 @@ if __name__ == "__main__":
     Unified pipeline:
     1. Load & process M3 dataset
     2. Generate images (RP, GAF, MTF) from time series
-    3. Extract numerical features from time series
-    4. Extract CNN features from images
-    5. Select best views using diversity & similarity
-    6. Perform multi-view fuzzy clustering
-    7. Run multiple experiments & collect predictions
-    8. Evaluate ensemble predictions using Median approach
+    3.1. Extract numerical features from time series
+    3.2. Extract CNN features from images
+    4. Select best views using diversity & similarity
+    5. Perform multi-view fuzzy clustering
+    6. Run multiple experiments & collect predictions
+    7. Evaluate ensemble predictions using Median approach
     """
 
     # Step 1: Process M3 dataset
