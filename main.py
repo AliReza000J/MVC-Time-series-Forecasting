@@ -3,13 +3,13 @@ from ViewGeneration.view_generation import process_m3_dataset  # M3 dataset prep
 from ViewGeneration.view_generation import process_time_series  # Generate views
 # from ViewEncoding.m3_preprocessing import process_m3_dataset_enc # M3 dataset preprocessing for encoding
 # from ViewEncoding.feature_extraction import extract_time_series_features, extract_image_features  # Feature extraction
-# from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 # from ViewSelection.view_selection import select_views  # View selection
 # from FuzzyClustering.demo import fuzzy_multi_view_clustering  # Multi-view clustering
 # from Forecasting.m3_forecasting import run_experiments  # Run forecasting experiments
 # from Forecasting.ensemble import median_ensemble_evaluation  # Median ensemble evaluation
 
-# min_max_scaler =MinMaxScaler()
+min_max_scaler =MinMaxScaler()
 
 if __name__ == "__main__":
     """
@@ -32,86 +32,92 @@ if __name__ == "__main__":
 
     # #  micro
     # micro = data['MICRO']
-    # print(micro)
-    # process_time_series(micro, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/MICRO")
+    # image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
+    # process_time_series(micro, "f'{image_output_path}/MICRO', 18, 0)
 
     # #  industry
     # industry = data['INDUSTRY']
-    # print(industry)
-    # process_time_series(industry, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/INDUSTRY", 18, True, 474)
+    # image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
+    # process_time_series(industry, f'{image_output_path}/INDUSTRY', 18, True, 474)
 
     # #  macro
     # macro = data['MACRO']
-    # print(macro)
-    # process_time_series(macro, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/MACRO", 18, True, 808)
+    # image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
+    # process_time_series(macro, f'{image_output_path}/MACRO', 18, True, 808)
 
     # #  finance
     # finance = data['FINANCE']
-    # print(finance)
-    # process_time_series(finance, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/FINANCE", 18, True, 1120)
+    # image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
+    # process_time_series(finance, f'{image_output_path}/FINANCE', 18, True, 1120)
 
-     #  demo
+    #  demo
     demo = data['DEMOGRAPHIC']
     image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
     process_time_series(demo, f'{image_output_path}/DEMOGRAPHIC', 18, True, 1265)
 
     #  #  other
     # other = data['OTHER']
-    # print(other)
-    # process_time_series(other, "/workspaces/MVC-Time-series-Forcasting/data/generated_images/OTHER", 18, True, 1376)
+    # image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
+    # process_time_series(other, f'{image_output_path}/OTHER', 18, True, 1376)
 
-    # # Step 3: Extract features using Autoencoder
-    # processed_data = process_m3_dataset_enc(file_path)
-    # features_list = []
-    # if processed_data:
-    #     print("Time-series processing complete. Categories:", list(processed_data.keys()))
+    # Step 3: Extract features using Autoencoder
+    processed_data = process_m3_dataset_enc(file_path)
+    features_list = []
+    if processed_data:
+        print("Time-series processing complete. Categories:", list(processed_data.keys()))
 
-    # # Step 3.1: Extract numerical features only for 'DEMOGRAPHIC'
-    # demo_ts_features = {
-    #     label: extract_time_series_features(data)
-    #     for label, data in processed_data.items()
-    #     if label == "DEMOGRAPHIC"
-    # }
-    # features_list.append(min_max_scaler.fit_transform(demo_ts_features))
-    # # np.save("demo_time_series_features.npy", demo_ts_features)
-    # print("Time-series feature extraction complete.")
+    # Step 3.1: Extract numerical features only for 'DEMOGRAPHIC'
+    demo_ts_features_dict = {
+        label: extract_time_series_features(data)
+        for label, data in processed_data.items()
+        if label == "DEMOGRAPHIC"
+    }
+    demo_ts_features = list(demo_ts_features_dict.values())[0]
+    features_list.append(min_max_scaler.fit_transform(demo_ts_features))
+    # np.save("demo_time_series_features.npy", demo_ts_features)
+    print("Time-series feature extraction complete.")
 
-    # # Step 3.2: Extract image-based CNN features only for 'DEMOGRAPHIC'
+    # Step 3.2: Extract image-based CNN features only for 'DEMOGRAPHIC'
+    demo_rp_img_features_dict = {
+        label: extract_image_features(data, f"{image_output_path}/{label}/rp", gray=True)
+        for label, data in processed_data.items()
+        if label == "DEMOGRAPHIC"
+    }
+    demo_rp_img_features = list(demo_rp_img_features_dict.values())[0]
+    features_list.append(min_max_scaler.fit_transform(demo_rp_img_features))
+
     
-    # demo_rp_img_features = {
-    #     label: extract_image_features(f"{image_output_path}/{label}/rp", gray=True)
-    #     for label in processed_data.keys()
-    #     if label == "DEMOGRAPHIC"
-    # }
-    # features_list.append(min_max_scaler.fit_transform(demo_rp_img_features))
+    demo_mtf_img_features_dict = {
+        label: extract_image_features(data, f"{image_output_path}/{label}/mtf", gray=False)
+        for label, data in processed_data.items()
+        if label == "DEMOGRAPHIC"
+    }
+    demo_mtf_img_features = list(demo_mtf_img_features_dict.values())[0]
+    features_list.append(min_max_scaler.fit_transform(demo_mtf_img_features))
 
-    # demo_mtf_img_features = {
-    #     label: extract_image_features(f"{image_output_path}/{label}/mtf", gray=False)
-    #     for label in processed_data.keys()
-    #     if label == "DEMOGRAPHIC"
-    # }
-    # features_list.append(min_max_scaler.fit_transform(demo_mtf_img_features))
+    
+    demo_gasf_img_features_dict = {
+        label: extract_image_features(data, f"{image_output_path}/{label}/gasf", gray=False)
+        for label, data in processed_data.items()
+        if label == "DEMOGRAPHIC"
+    }
+    demo_gasf_img_features = list(demo_gasf_img_features_dict.values())[0]
+    features_list.append(min_max_scaler.fit_transform(demo_gasf_img_features))
 
-    # demo_gasf_img_features = {
-    #     label: extract_image_features(f"{image_output_path}/{label}/gasf", gray=False)
-    #     for label in processed_data.keys()
-    #     if label == "DEMOGRAPHIC"
-    # }
-    # features_list.append(min_max_scaler.fit_transform(demo_gasf_img_features))
+    
+    demo_gadf_img_features_dict = {
+        label: extract_image_features(data, f"{image_output_path}/{label}/gadf", gray=False)
+        for label, data in processed_data.items()
+        if label == "DEMOGRAPHIC"
+    }
+    demo_gadf_img_features = list(demo_gadf_img_features_dict.values())[0]
+    features_list.append(min_max_scaler.fit_transform(demo_gadf_img_features))
 
-    # demo_gadf_img_features = {
-    #     label: extract_image_features(f"{image_output_path}/{label}/gadf", gray=False)
-    #     for label in processed_data.keys()
-    #     if label == "DEMOGRAPHIC"
-    # }
-    # features_list.append(min_max_scaler.fit_transform(demo_gadf_img_features))
+    # np.save("demo_image_features.npy", features_list)
+    print("Image feature extraction complete.")
 
-    # # np.save("demo_image_features.npy", features_list)
-    # print("Image feature extraction complete.")
-
-    # np.save('/workspaces/MVC-Time-series-Forcasting/data/features/demo_All_features.npy', features_list)
-    # print("All features saved for DEMOGRAPHIC.")
-
+    np.save('/workspaces/MVC-Time-series-Forcasting/data/features/demo_All_features.npy', features_list)
+    print("All features saved for DEMOGRAPHIC.")
 
     # # Step 4: Select best views
     # selected_views = {}

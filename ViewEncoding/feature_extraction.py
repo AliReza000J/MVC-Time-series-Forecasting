@@ -4,72 +4,69 @@ import tensorflow as tf
 from tensorflow import keras
 import keras
 from PIL import Image
-from keras import layers, Sequential, Input, Model
+from tensorflow.keras import layers, Model, Input
 
 
 # ================================
 #  Base Image Autoencoder
 # ================================
 
+from tensorflow.keras import layers, Model, Input
+
 class ImageAE:
     def __init__(self, latent_dim=32, img_input_shape=(64, 64, 3), filters=[32, 64, 128]):
         """
-        Image-based Autoencoder with an Encoder-Decoder structure.
-
-        Parameters:
-        - latent_dim: Size of the latent space (default=32)
-        - img_input_shape: Shape of input images (default=(64,64,3))
-        - filters: List of filter sizes for convolutional layers (default=[32, 64, 128])
+        Functional-style CNN Autoencoder for images.
+        
+        Args:
+            latent_dim (int): Size of the latent space.
+            img_input_shape (tuple): Shape of the input image.
+            filters (list): List of filters per conv block.
         """
         self.latent_dim = latent_dim
         self.img_input_shape = img_input_shape
         self.filters = filters
 
-        # Build models
+        # Build the components
         self.encoder = self.build_encoder()
         self.decoder = self.build_decoder()
         self.autoencoder = self.build_autoencoder()
 
     def build_encoder(self):
-        """Builds the encoder model."""
-        encoder = Sequential(name="Encoder")
-        encoder.add(Input(shape=self.img_input_shape))
-        
-        # Convolutional layers with BatchNorm and Dropout
-        for f in self.filters:
-            encoder.add(layers.Conv2D(f, (3, 3), activation="relu", padding="same"))
-            encoder.add(layers.BatchNormalization())
-            encoder.add(layers.MaxPooling2D((2, 2)))
-            encoder.add(layers.Dropout(0.2))  # Reduce overfitting
-        
-        # Latent representation
-        encoder.add(layers.Flatten())
-        encoder.add(layers.Dense(self.latent_dim, activation=layers.LeakyReLU(alpha=0.1)))
-        return encoder
+        input_img = Input(shape=self.img_input_shape, name="image_input")
+        x = input_img
+
+        # Convolutional encoder
+        for i, f in enumerate(self.filters):
+            x = layers.Conv2D(f, (3, 3), padding="same", activation="relu", name=f"enc_conv_{i}")(x)
+            x = layers.BatchNormalization(name=f"enc_bn_{i}")(x)
+            x = layers.MaxPooling2D((2, 2), name=f"enc_pool_{i}")(x)
+            x = layers.Dropout(0.2, name=f"enc_dropout_{i}")(x)
+
+        x = layers.Flatten(name="enc_flatten")(x)
+        encoded = layers.Dense(self.latent_dim, activation=layers.LeakyReLU(alpha=0.1), name="latent")(x)
+
+        return Model(inputs=input_img, outputs=encoded, name="ImageEncoder")
 
     def build_decoder(self):
-        """Builds the decoder model."""
-        decoder = Sequential(name="Decoder")
-        decoder.add(Input(shape=(self.latent_dim,)))
+        latent_input = Input(shape=(self.latent_dim,), name="latent_input")
+        x = layers.Dense(8 * 8 * self.filters[-1], activation="relu", name="dec_dense")(latent_input)
+        x = layers.Reshape((8, 8, self.filters[-1]), name="dec_reshape")(x)
 
-        # Fully connected layer before reshaping
-        decoder.add(layers.Dense(8 * 8 * self.filters[-1], activation="relu"))
-        decoder.add(layers.Reshape((8, 8, self.filters[-1])))
+        # Upsampling 3 times to get back to 64x64
+        for i, f in enumerate(reversed(self.filters)):
+            x = layers.Conv2DTranspose(f, (3, 3), strides=2, padding="same", activation="relu", name=f"dec_deconv_{i}")(x)
+            x = layers.BatchNormalization(name=f"dec_bn_{i}")(x)
 
-        # Upsampling + Transposed Convolutions
-        for f in reversed(self.filters[:-1]):
-            decoder.add(layers.Conv2DTranspose(f, (3, 3), strides=2, activation="relu", padding="same"))
-            decoder.add(layers.BatchNormalization())
+        x = layers.Conv2DTranspose(self.img_input_shape[2], (3, 3), activation="sigmoid", padding="same", name="dec_output")(x)
 
-        decoder.add(layers.Conv2DTranspose(self.img_input_shape[2], (3, 3), activation="sigmoid", padding="same"))
-        return decoder
+        return Model(inputs=latent_input, outputs=x, name="ImageDecoder")
 
     def build_autoencoder(self):
-        """Combines the encoder and decoder into a full autoencoder."""
-        input_img = Input(shape=self.img_input_shape)
-        encoded_img = self.encoder(input_img)
-        decoded_img = self.decoder(encoded_img)
-        return Model(inputs=input_img, outputs=decoded_img, name="ImageAutoencoder")
+        input_img = Input(shape=self.img_input_shape, name="ae_input")
+        encoded = self.encoder(input_img)
+        decoded = self.decoder(encoded)
+        return Model(inputs=input_img, outputs=decoded, name="ImageAutoencoder")
 
 # ================================
 #  Autoencoder for Time-Series Data
@@ -78,38 +75,36 @@ class ImageAE:
 def build_time_series_autoencoder(latent_dim=8, encoder_hiddens=[256, 128, 64], 
                                   decoder_hiddens=[64, 128, 256], series_len=None):
     """
-    Builds an LSTM-based autoencoder for time-series feature extraction.
-    
+    Builds an LSTM-based autoencoder for time-series feature extraction using the functional API.
+
     Args:
         latent_dim (int): Dimensionality of the latent space.
-        encoder_hiddens (list): List of hidden units in the encoder LSTM layers.
-        decoder_hiddens (list): List of hidden units in the decoder LSTM layers.
-        series_len (int): Length of the time series.
-    
+        encoder_hiddens (list): Hidden units for encoder LSTM layers.
+        decoder_hiddens (list): Hidden units for decoder LSTM layers.
+        series_len (int): Length of time series input.
+
     Returns:
-        keras.Model: Compiled autoencoder model.
+        keras.Model: Autoencoder model.
     """
-    model = tf.keras.Sequential()
-    model.add(keras.Input((None, series_len)))  # Input shape (batch_size, timesteps, series_length)
-    
-    # Masking to ignore padding values (if any)
-    model.add(keras.layers.Masking(mask_value=0.0))
+    input_layer = keras.Input(shape=(None, series_len), name="input")
+    x = layers.Masking(mask_value=0.0)(input_layer)
 
     # Encoder
     for i, units in enumerate(encoder_hiddens[:-1]):
-        model.add(tf.keras.layers.LSTM(units, return_sequences=True))
-    model.add(tf.keras.layers.LSTM(encoder_hiddens[-1]))  # Last layer without return_sequences
+        x = layers.LSTM(units, return_sequences=True, name=f"enc_lstm_{i}")(x)
+    x = layers.LSTM(encoder_hiddens[-1], name="enc_lstm_final")(x)
 
-    # Latent Space
-    model.add(keras.layers.Dense(latent_dim, name="emb"))
+    # Latent representation
+    encoded = layers.Dense(latent_dim, activation=None, name="emb")(x)
 
     # Decoder
-    model.add(keras.layers.RepeatVector(1))
-    for units in decoder_hiddens:
-        model.add(tf.keras.layers.LSTM(units, return_sequences=True))
-    
-    model.add(keras.layers.TimeDistributed(keras.layers.Dense(series_len)))  # Output layer
+    x = layers.RepeatVector(1, name="repeat_vector")(encoded)
+    for i, units in enumerate(decoder_hiddens):
+        x = layers.LSTM(units, return_sequences=True, name=f"dec_lstm_{i}")(x)
 
+    output = layers.TimeDistributed(layers.Dense(series_len), name="output")(x)
+
+    model = keras.Model(inputs=input_layer, outputs=output, name="TimeSeriesAutoencoder")
     return model
 
 
