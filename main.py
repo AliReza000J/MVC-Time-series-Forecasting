@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # #  micro
     # micro = data['MICRO']
     # image_output_path = "/workspaces/MVC-Time-series-Forcasting/data/generated_images"
-    # process_time_series(micro, "f'{image_output_path}/MICRO', 18, 0)
+    # process_time_series(micro, f'{image_output_path}/MICRO', 18, 0)
 
     # #  industry
     # industry = data['INDUSTRY']
